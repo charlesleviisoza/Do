@@ -40,12 +40,12 @@ export class LoggerService implements ILoggerService{
         const morganMiddleware = morgan(
             ':method :url | Status: :status | Response time: :response-time ms',
             {
+                skip: (req, res)=>{ return res.statusCode !== StatusCodes.OK},
                 stream:{
                     write: (message: string) => {
                         this.logger.info(message.trim());
                     }
-                },
-                skip: (req, res)=>{ return res.statusCode !== StatusCodes.OK}
+                }
             }
         )
 

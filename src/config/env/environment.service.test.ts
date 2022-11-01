@@ -17,11 +17,14 @@ describe('Environment variables', ()=>{
             DATABASE_NAME: "test",
             DATABASE_PASSWORD: "test",
             DATABASE_PORT: "test",
+            DATABASE_SSL: "TRUE",
             DATABASE_USER: "test",
-            PORT: "3000",
-            ROOT_PATH: "/api",
+            HOSTNAME: "test",
+            LOGGER_LEVEL: 'OFF',
+            MIGRATE_DATABASE: "FALSE",
             NODE_ENV: "development",
-            LOGGER_LEVEL: 'OFF'
+            PORT: "3000",
+            ROOT_PATH: "/api"
         }
         const environService = new EnvironmentService();
         expect(environService.getValidationError()).toBeFalsy();

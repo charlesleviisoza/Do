@@ -14,29 +14,29 @@ export class ResolverService implements IResolverService{
     private resolvers: IResolvers<any>
 
     constructor(
-        @inject(TYPE.AttachmentResolver) private attachmentResolver: IAPIResolver
+        @inject(TYPE.LocationResolver) private locationResolver: IAPIResolver
     ){
         this.typeDefs = `
-            ${this.attachmentResolver.getTypeDef()}
+            ${this.locationResolver.getTypeDef()}
 
             type Status {
                 status: Int!
             }
         `
         this.resolvers = {
-            Query: {
-                ...this.attachmentResolver.getQueryResolvers()
-            },
             Mutation: {
-                ...this.attachmentResolver.getMutationResolvers()
+                ...this.locationResolver.getMutationResolvers()
+            },
+            Query: {
+                ...this.locationResolver.getQueryResolvers()
             }
         }
     }
 
     getExecutableSchema(): GraphQLSchema {
         return makeExecutableSchema({
-            typeDefs: this.typeDefs,
-            resolvers: this.resolvers
+            resolvers: this.resolvers,
+            typeDefs: this.typeDefs
         })
     }
 

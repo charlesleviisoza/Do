@@ -1,12 +1,12 @@
 import { IEnvironmentService } from ".";
-import { environmentSchema, EnvironmentVariables } from "./environmentVariables";
+import { environmentSchema, IEnvironmentVariables } from "./environmentVariables";
 import { provide } from "@config/ioc/inversify.config";
 import { TYPE } from "@config/ioc/types";
 
 @provide(TYPE.IEnvironmentService)
 export class EnvironmentService implements IEnvironmentService{
 
-    private variables!: EnvironmentVariables;
+    private variables!: IEnvironmentVariables;
     private validationError?: Error
 
     constructor(){
@@ -23,9 +23,10 @@ export class EnvironmentService implements IEnvironmentService{
                 databasePort: validationResult.value.DATABASE_PORT,
                 databaseSSL: validationResult.value.DATABASE_SSL === 'TRUE',
                 databaseUser: validationResult.value.DATABASE_USER,
-                nodeEnv: validationResult.value.NODE_ENV,
+                hostname: validationResult.value.HOSTNAME,
                 loggerlevel: validationResult.value.LOGGER_LEVEL,
                 migrateDatabase: validationResult.value.MIGRATE_DATABASE === 'TRUE',
+                nodeEnv: validationResult.value.NODE_ENV,
                 port: validationResult.value.PORT,
                 rootPath: validationResult.value.ROOT_PATH
             };
@@ -34,7 +35,7 @@ export class EnvironmentService implements IEnvironmentService{
         }
     }
 
-    public getVariables(): EnvironmentVariables{
+    public getVariables(): IEnvironmentVariables{
         return this.variables;
     }
 

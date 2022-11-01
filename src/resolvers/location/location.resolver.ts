@@ -9,8 +9,8 @@ import { InternalServerError } from "@errors/internalServer.error";
 import { ILocationService } from "@services/location";
 import { LocationResolverModels } from "./location.resolver.model";
 
-@provide(TYPE.AttachmentResolver)
-export class AttachmentResolver implements IAPIResolver{
+@provide(TYPE.LocationResolver)
+export class LocationResolver implements IAPIResolver{
 
     private typeDefs: string
     private resolvers: IResolvers<any>
@@ -36,8 +36,6 @@ export class AttachmentResolver implements IAPIResolver{
                 name: String!
                 type: String!
                 dimension: String!
-                url: String!
-                created: String!
             }
 
             type LocationDetails {
@@ -51,25 +49,25 @@ export class AttachmentResolver implements IAPIResolver{
             }
         `
         this.resolvers = {
-            Query: {
-                locations: () => {
-                    return this.locationService.getAllLocations()
-                },
-                location: (_, {locationId}) => {
-                    const result = this.locationService.getLocation(locationId);
-                    if(!result) throw new ItemNoExistsError('Item does not exist')
-                    return result
-                }
-            },
             Mutation: {
-                createLocation: (_, {location}) => {
+                createLocation: async (_, {location}) => {
                     const validationResult = validateJoi(LocationResolverModels.create, location)
                     if(!validationResult.valid){
                         throw new InternalServerError(validationResult.error?.message || 'Validation error')
                     }
-                    const generatedObject = this.locationService.createLocation(location)
+                    const generatedObject = await this.locationService.createLocation(location)
                     return generatedObject
 
+                }
+            },
+            Query: {
+                location: async (_, {locationId}) => {
+                    const result = await this.locationService.getLocation(locationId);
+                    if(!result) throw new ItemNoExistsError('Item does not exist')
+                    return result
+                },
+                locations: async () => {
+                    return await this.locationService.getAllLocations()
                 }
             }
         }

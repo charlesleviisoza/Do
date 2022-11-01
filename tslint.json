@@ -4,12 +4,20 @@
         "tslint:recommended"
     ],
     "jsRules": {
-        "no-console": false,
-        "no-empty": false
+        "no-console": true,
+        "no-empty": true,
+        "forin": false,
+        "interface-name": [true, "always-prefix"],
+        "object-literal-sort-keys": true,
+        "member-ordering": [false, {"order": "fields-first"}]
     },
     "rules": {
-        "no-console": false,
-        "no-empty": false
+        "no-console": true,
+        "no-empty": true,
+        "forin": false,
+        "interface-name": [true, "always-prefix"],
+        "object-literal-sort-keys": true,
+        "member-ordering": [false, {"order": "fields-first"}]
     },
     "rulesDirectory": []
 }

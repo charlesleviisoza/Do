@@ -22,7 +22,7 @@ describe('Error filter tests', ()=>{
             url: '/auth/login'
         });
         const response = createResponse();
-        const result = errorFilter(loggerService)(error, request, response, ()=>{});
+        const result = errorFilter(loggerService)(error, request, response, ()=>({}));
         expect(result?.statusCode).toEqual(400);
         expect(error.getResponse().error).toEqual(ApiErrors.REQUEST_SCHEMA_ERROR);
     })
@@ -34,7 +34,7 @@ describe('Error filter tests', ()=>{
             url: '/auth/login'
         });
         const response = createResponse();
-        const result = errorFilter(loggerService)(error, request, response, ()=>{});
+        const result = errorFilter(loggerService)(error, request, response, ()=>({}));
         expect(result?.statusCode).toEqual(500);
         expect(error.getResponse().error).toEqual(ApiErrors.INTERNAL_SERVER_ERROR);
     })
@@ -46,7 +46,7 @@ describe('Error filter tests', ()=>{
             url: '/auth/login'
         });
         const response = createResponse();
-        const result = errorFilter(loggerService)(error, request, response, ()=>{});
+        const result = errorFilter(loggerService)(error, request, response, ()=>({}));
         expect(result?.statusCode).toEqual(403);
         expect(error.getResponse().error).toEqual(ApiErrors.FORBIDDEN);
     })

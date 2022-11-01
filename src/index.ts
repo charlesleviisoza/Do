@@ -52,15 +52,15 @@ server.setConfig((app) => {
   app.use(
     `${envVariables.rootPath}/graphql`,
     graphqlHTTP({
-      schema: resolverService.getExecutableSchema(),
-      graphiql: envVariables.nodeEnv !== 'production',
       customFormatErrorFn: (err)=>{
         const error: any = err.originalError
         return {
-          message: err.message,
-          errorId: error?.errorId || ApiErrors.INTERNAL_SERVER_ERROR
+          errorId: error?.errorId || ApiErrors.INTERNAL_SERVER_ERROR,
+          message: err.message
         }
-      }
+      },
+      graphiql: envVariables.nodeEnv !== 'production',
+      schema: resolverService.getExecutableSchema()
     }),
   );
 

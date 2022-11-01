@@ -1,7 +1,7 @@
-import { EnvironmentVariables } from "./environmentVariables"
+import { IEnvironmentVariables } from "./environmentVariables"
 
 export interface IEnvironmentService{
     loadEnvironment(): void
-    getVariables(): EnvironmentVariables
+    getVariables(): IEnvironmentVariables
     getValidationError(): Error | undefined
 }

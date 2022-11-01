@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 import { createRequest, createResponse } from "node-mocks-http";
-import { getSampleServices, SampleServices } from '@utils/environment.sample';
+import { getSampleServices, ISampleServices } from '@utils/environment.sample';
 import { LivenessController } from './liveness.controller';
 
 describe('Auth Controller', ()=>{
     let livenessController: LivenessController;
-    let services: SampleServices;
+    let services: ISampleServices;
 
     beforeEach(()=>{
         services = getSampleServices();
@@ -18,7 +18,7 @@ describe('Auth Controller', ()=>{
             url: '/'
         });
         const response = createResponse();
-        const result = await livenessController.index(request, response, ()=>{});
+        const result = await livenessController.index(request, response, ()=>({}));
         expect(result.data).toEqual('App is live');
     })
 

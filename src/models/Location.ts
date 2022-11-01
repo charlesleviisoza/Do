@@ -8,7 +8,7 @@ export interface ILocation {
     dimension: string
     created: string
     url?: string
-    residents?: string
+    residents?: string[]
 }
 
 export class Location extends Model<ILocation> implements ILocation {
