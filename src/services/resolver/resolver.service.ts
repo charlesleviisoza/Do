@@ -15,11 +15,13 @@ export class ResolverService implements IResolverService{
 
     constructor(
         @inject(TYPE.LocationResolver) private locationResolver: IAPIResolver,
-        @inject(TYPE.CharacterResolver) private characterResolver: IAPIResolver
+        @inject(TYPE.CharacterResolver) private characterResolver: IAPIResolver,
+        @inject(TYPE.EpisodeResolver) private episodeResolver: IAPIResolver
     ){
         const resolvers = [
             this.locationResolver,
-            this.characterResolver
+            this.characterResolver,
+            this.episodeResolver
         ]
         this.typeDefs = `
             ${this.initTypeDefs(resolvers)}

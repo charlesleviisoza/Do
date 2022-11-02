@@ -17,6 +17,7 @@ export interface ICharacter {
   created: string
   origin: ICharacterLocation
   location: ICharacterLocation
+  episode: string[]
 }
 
 export interface ICharacterSchema {

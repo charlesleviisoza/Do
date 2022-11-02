@@ -3,6 +3,8 @@ import { provide } from "@config/ioc/inversify.config";
 import { TYPE } from "@config/ioc/types";
 import { AttachmentTypes } from "@enums/attachmentTypes.enum";
 import { _Character } from "@models/Character";
+import { _Episode } from "@models/Episode";
+import { _EpisodeCharacter } from "@models/EpisodeCharacter";
 import { _Location } from "@models/Location";
 import { IModels } from "@models/models.interface";
 import { ILoggerService } from "@services/logger";
@@ -73,8 +75,25 @@ export class PersistanceService implements IPersistanceService{
                 one: false
             }
         ])
+        const Episode = _Episode(this.sequelize)
+        const EpisodeCharacter = _EpisodeCharacter(this.sequelize, [
+            {
+                as: 'episode',
+                foreignKey: 'episodeId',
+                instance: Episode,
+                one: false
+            },
+            {
+                as: 'character',
+                foreignKey: 'characterId',
+                instance: Character,
+                one: false
+            }
+        ])
         return {
             Character,
+            Episode,
+            EpisodeCharacter,
             Location
         };
     }

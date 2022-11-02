@@ -1,8 +1,10 @@
 import { EnvironmentService } from "@config/env/environment.service";
 import { IEnvironmentVariables } from "@config/env/environmentVariables";
 import { CharacterResolver } from "@resolvers/character/character.resolver";
+import { EpisodeResolver } from "@resolvers/episode/episode.resolver";
 import { LocationResolver } from "@resolvers/location/location.resolver";
 import { CharacterService } from "@services/character/character.service";
+import { EpisodeService } from "@services/episode/episode.service";
 import { LocationService } from "@services/location/location.service";
 import { LoggerService } from "@services/logger/logger.service";
 import { PersistanceService } from "@services/persistance/persistance.service";
@@ -40,7 +42,9 @@ export const getSampleServices = (): ISampleServices => {
     const locationResolver: LocationResolver = new LocationResolver(locationService);
     const characterService: CharacterService = new CharacterService(persistanceService, environService)
     const characterResolver: CharacterResolver = new CharacterResolver(characterService)
-    const resolverService: ResolverService = new ResolverService(locationResolver, characterResolver);
+    const episodeService: EpisodeService = new EpisodeService(persistanceService, environService)
+    const episodeResolver: EpisodeResolver = new EpisodeResolver(episodeService)
+    const resolverService: ResolverService = new ResolverService(locationResolver, characterResolver, episodeResolver);
 
     return {
         environService,

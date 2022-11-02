@@ -7,6 +7,7 @@ import { validateJoi } from "@utils/joi";
 import { InternalServerError } from "@errors/internalServer.error";
 import { ICharacterService } from "@services/character";
 import { CharacterResolverModels } from "./character.resolver.model";
+import { ItemNoExistsError } from "@errors/itemNoExists.error";
 
 @provide(TYPE.CharacterResolver)
 export class CharacterResolver implements IAPIResolver{
@@ -21,6 +22,7 @@ export class CharacterResolver implements IAPIResolver{
 
             type Query {
                 characters: [CharacterDetails]!
+                character(characterId: Int!): CharacterDetails
             }
 
             type Mutation {
@@ -52,6 +54,7 @@ export class CharacterResolver implements IAPIResolver{
                 image: String!
                 origin: CharacterLocation!
                 location: CharacterLocation!
+                episode: [String!]
             }
 
             type CharacterLocation {
@@ -72,11 +75,11 @@ export class CharacterResolver implements IAPIResolver{
                 }
             },
             Query: {
-                // location: async (_, {locationId}) => {
-                //     const result = await this.locationService.getLocation(locationId);
-                //     if(!result) throw new ItemNoExistsError('Item does not exist')
-                //     return result
-                // },
+                character: async (_, {characterId}) => {
+                    const result = await this.characterService.getCharacter(characterId);
+                    if(!result) throw new ItemNoExistsError('Item does not exist')
+                    return result
+                },
                 characters: async () => {
                     return await this.characterService.getAllCharacters()
                 }

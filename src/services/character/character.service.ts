@@ -2,9 +2,7 @@ import { IEnvironmentService } from "@config/env";
 import { provide } from "@config/ioc/inversify.config";
 import { TYPE } from "@config/ioc/types";
 import { InternalServerError } from "@errors/internalServer.error";
-import { ItemNoExistsError } from "@errors/itemNoExists.error";
 import { ICharacter, ICharacterSchema } from "@models/Character";
-import { ILocation, ILocationSchema, Location } from "@models/Location";
 import { IPersistanceService } from "@services/persistance";
 import { inject } from "inversify";
 import { ICharacterService } from ".";
@@ -19,12 +17,24 @@ export class CharacterService implements ICharacterService{
 
     async getCharacter(characterId: number): Promise<ICharacter | undefined> {
         const character = await this.persistanceService.models.Character.findOne({
+            include: [
+                {
+                    as: 'origin',
+                    attributes: ['id','name','type','dimension'],
+                    model: this.persistanceService.models.Location
+                },
+                {
+                    as: 'location',
+                    attributes: ['id','name','type','dimension'],
+                    model: this.persistanceService.models.Location
+                }
+            ],
             raw: true,
             where: {
                 id: characterId
             }
         })
-        return character ? this.transformCharacter(character) : undefined
+        return character ? await this.transformCharacter(character) : undefined
     }
 
     async getAllCharacters(): Promise<ICharacter[]> {
@@ -43,7 +53,7 @@ export class CharacterService implements ICharacterService{
             ],
             raw: true
         });
-        return characters.map(this.transformCharacter)
+        return await Promise.all(characters.map(async c => this.transformCharacter(c)))
     }
 
     async createCharacter(character: ICharacterSchema){
@@ -58,9 +68,21 @@ export class CharacterService implements ICharacterService{
         }
     }
 
-    transformCharacter = (character: ICharacterSchema): ICharacter => {
+    transformCharacter = async (character: ICharacterSchema): Promise<ICharacter> => {
+        const episodes = await this.persistanceService.models.EpisodeCharacter.findAll({
+            include:{
+                as: 'episode',
+                attributes: ['id'],
+                model: this.persistanceService.models.Episode
+            },
+            raw: true,
+            where: {
+                characterId: character.id
+            }
+        })
         const characterResult: ICharacter = {
             created: character.created,
+            episode: episodes.map(e=>`${this.environmentService.getVariables().hostname}/episode/${(e as any)['episode.id']}`),
             gender: character.gender,
             id: character.id,
             image: character.image,

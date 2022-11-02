@@ -17,7 +17,13 @@
         "forin": false,
         "interface-name": [true, "always-prefix"],
         "object-literal-sort-keys": true,
-        "member-ordering": [false, {"order": "fields-first"}]
+        "member-ordering": [false, {"order": "fields-first"}],
+        "variable-name": {
+            "options": [
+              "allow-pascal-case",
+              "allow-snake-case"
+            ]
+          }
     },
     "rulesDirectory": []
 }

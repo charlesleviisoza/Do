@@ -10,6 +10,7 @@ import '@controllers/liveness/liveness.controller'
 // import resolvers
 import '@resolvers/location/location.resolver'
 import '@resolvers/character/character.resolver'
+import '@resolvers/episode/episode.resolver'
 
 // import services
 import '@config/env/environment.service'
@@ -18,6 +19,7 @@ import '@services/persistance/persistance.service'
 import '@services/resolver/resolver.service'
 import '@services/location/location.service'
 import '@services/character/character.service'
+import '@services/episode/episode.service'
 
 
 container.load(buildProviderModule());
