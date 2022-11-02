@@ -2,12 +2,13 @@ import { IEnvironmentService } from "@config/env";
 import { provide } from "@config/ioc/inversify.config";
 import { TYPE } from "@config/ioc/types";
 import { AttachmentTypes } from "@enums/attachmentTypes.enum";
+import { _Character } from "@models/Character";
 import { _Location } from "@models/Location";
 import { IModels } from "@models/models.interface";
 import { ILoggerService } from "@services/logger";
 import { createHash } from "@utils/hash.crypto";
 import { inject } from "inversify";
-import { Sequelize, Op } from "sequelize";
+import { Sequelize, Op, Model } from "sequelize";
 import { IPersistanceService } from ".";
 
 @provide(TYPE.IPersistanceService)
@@ -60,7 +61,20 @@ export class PersistanceService implements IPersistanceService{
 
     private initModels():IModels{
         const Location = _Location(this.sequelize);
+        const Character = _Character(this.sequelize,[
+            {
+                as: 'origin',
+                instance: Location,
+                one: false
+            },
+            {
+                as: 'location',
+                instance: Location,
+                one: false
+            }
+        ])
         return {
+            Character,
             Location
         };
     }

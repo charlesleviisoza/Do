@@ -1,8 +1,9 @@
 import { IEnvironmentService } from "@config/env";
 import { provide } from "@config/ioc/inversify.config";
 import { TYPE } from "@config/ioc/types";
+import { InternalServerError } from "@errors/internalServer.error";
 import { ItemNoExistsError } from "@errors/itemNoExists.error";
-import { ILocation } from "@models/Location";
+import { ILocation, ILocationSchema, Location } from "@models/Location";
 import { IPersistanceService } from "@services/persistance";
 import { inject } from "inversify";
 import { ILocationService } from ".";
@@ -32,18 +33,29 @@ export class LocationService implements ILocationService{
         return locations.map(this.transformLocation)
     }
 
-    async createLocation(location: ILocation){
-        location.created = (new Date()).toISOString()
-        const newLocation = await this.persistanceService.models.Location.create(location)
-        return {
-            id: newLocation.id
+    async createLocation(location: ILocationSchema){
+        try{
+            location.created = (new Date()).toISOString()
+            const newLocation = await this.persistanceService.models.Location.create(location)
+            return {
+                id: newLocation.id
+            }
+        }catch(err: any){
+            throw new InternalServerError('Error creating the entity')
         }
     }
 
-    transformLocation = (location: ILocation) => {
-        location.url = `${this.environmentService.getVariables().hostname}/location/${location.id}`
-        location.residents = []
-        return location
+    transformLocation = (location: ILocationSchema): ILocation => {
+        const locationResult: ILocation = {
+            created: location.created,
+            dimension: location.dimension,
+            id: location.id,
+            name: location.name,
+            residents: [],
+            type: location.type,
+            url: `${this.environmentService.getVariables().hostname}/location/${location.id}`
+        }
+        return locationResult
     }
 
 }
