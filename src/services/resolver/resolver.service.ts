@@ -45,15 +45,15 @@ export class ResolverService implements IResolverService{
     }
 
     initResolvers(resolvers: IAPIResolver[]){
-        const result = {
+        let result = {
             Mutation: {},
             Query: {}
         }
         resolvers.forEach(resolver=>{
-            const mutations = resolver.getMutationResolvers()
-            const queries = resolver.getQueryResolvers()
-            result.Mutation = Object.assign(result.Mutation, mutations)
-            result.Query = Object.assign(result.Query, queries)
+            const { Mutation, Query, ...otherResolvers } = resolver.getResolvers()
+            result.Mutation = Object.assign(result.Mutation, Mutation)
+            result.Query = Object.assign(result.Query, Query)
+            result = Object.assign(result, otherResolvers)
         })
         return result
     }

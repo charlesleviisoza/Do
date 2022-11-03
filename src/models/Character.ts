@@ -1,5 +1,7 @@
 import { addParents } from "@utils/databaseTools";
 import { DataTypes, Model } from "sequelize";
+import { IEpisode } from "./Episode";
+import { ILocation } from "./Location";
 
 interface ICharacterLocation{
   name: string
@@ -15,9 +17,9 @@ export interface ICharacter {
   gender: string
   image: string
   created: string
-  origin: ICharacterLocation
-  location: ICharacterLocation
-  episode: string[]
+  origin?: number
+  location?: number
+  episode?: number[]
 }
 
 export interface ICharacterSchema {
@@ -29,6 +31,7 @@ export interface ICharacterSchema {
     gender: string
     image: string
     created: string
+    locationId: number
 }
 
 export class Character extends Model<ICharacterSchema> implements ICharacterSchema {
@@ -40,9 +43,10 @@ export class Character extends Model<ICharacterSchema> implements ICharacterSche
   public gender!: string
   public image!: string
   public created!: string
+  public locationId!: number
 }
 
-export function _Character(sequelize:any, parents?:{one:boolean,instance:any,as:string}[]){
+export function _Character(sequelize:any, parents?:{one:boolean,instance:any,as:string, foreignKey?:string}[]){
   // tslint:disable:object-literal-sort-keys
   Character.init(
     {
@@ -77,6 +81,10 @@ export function _Character(sequelize:any, parents?:{one:boolean,instance:any,as:
       },
       created: {
         type: DataTypes.STRING,
+        allowNull: false,
+      },
+      locationId: {
+        type: DataTypes.BIGINT,
         allowNull: false,
       }
     },

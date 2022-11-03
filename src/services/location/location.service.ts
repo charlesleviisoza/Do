@@ -1,8 +1,6 @@
-import { IEnvironmentService } from "@config/env";
 import { provide } from "@config/ioc/inversify.config";
 import { TYPE } from "@config/ioc/types";
 import { InternalServerError } from "@errors/internalServer.error";
-import { ItemNoExistsError } from "@errors/itemNoExists.error";
 import { ILocation, ILocationSchema, Location } from "@models/Location";
 import { IPersistanceService } from "@services/persistance";
 import { inject } from "inversify";
@@ -12,8 +10,7 @@ import { ILocationService } from ".";
 export class LocationService implements ILocationService{
 
     constructor(
-        @inject(TYPE.IPersistanceService) private persistanceService: IPersistanceService,
-        @inject(TYPE.IEnvironmentService) private environmentService: IEnvironmentService
+        @inject(TYPE.IPersistanceService) private persistanceService: IPersistanceService
     ){}
 
     async getLocation(locationId: number): Promise<ILocation | undefined> {
@@ -23,14 +20,14 @@ export class LocationService implements ILocationService{
                 id: locationId
             }
         })
-        return location ? this.transformLocation(location) : undefined
+        return location ? await this.transformLocation(location) : undefined
     }
 
     async getAllLocations(): Promise<ILocation[]> {
         const locations = await this.persistanceService.models.Location.findAll({
             raw: true
         });
-        return locations.map(this.transformLocation)
+        return await Promise.all(locations.map(async l => this.transformLocation(l)))
     }
 
     async createLocation(location: ILocationSchema){
@@ -45,15 +42,19 @@ export class LocationService implements ILocationService{
         }
     }
 
-    transformLocation = (location: ILocationSchema): ILocation => {
+    transformLocation = async (location: ILocationSchema): Promise<ILocation> => {
+        const characters = await this.persistanceService.models.Character.findAll({
+            where: {
+                locationId: location.id
+            }
+        })
         const locationResult: ILocation = {
             created: location.created,
             dimension: location.dimension,
             id: location.id,
             name: location.name,
-            residents: [],
-            type: location.type,
-            url: `${this.environmentService.getVariables().hostname}/location/${location.id}`
+            residents: characters.map(c => c.id),
+            type: location.type
         }
         return locationResult
     }

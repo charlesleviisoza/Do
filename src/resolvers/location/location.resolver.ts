@@ -8,6 +8,7 @@ import { validateJoi } from "@utils/joi";
 import { InternalServerError } from "@errors/internalServer.error";
 import { ILocationService } from "@services/location";
 import { LocationResolverModels } from "./location.resolver.model";
+import { ICharacterService } from "@services/character";
 
 @provide(TYPE.LocationResolver)
 export class LocationResolver implements IAPIResolver{
@@ -16,7 +17,8 @@ export class LocationResolver implements IAPIResolver{
     private resolvers: IResolvers<any>
 
     constructor(
-        @inject(TYPE.ILocationService) private locationService: ILocationService
+        @inject(TYPE.ILocationService) private locationService: ILocationService,
+        @inject(TYPE.ICharacterService) private characterService: ICharacterService
     ){
         this.typeDefs = `
             type Query {
@@ -43,12 +45,17 @@ export class LocationResolver implements IAPIResolver{
                 name: String!
                 type: String!
                 dimension: String!
-                residents: [String!]
-                url: String!
+                residents: [CharacterDetails!]
                 created: String!
             }
         `
         this.resolvers = {
+            LocationDetails: {
+                residents: async ({ residents }, _) => {
+                    const result = await this.characterService.getCharacters(residents);
+                    return result
+                }
+            },
             Mutation: {
                 createLocation: async (_, {location}) => {
                     const validationResult = validateJoi(LocationResolverModels.create, location)
@@ -83,6 +90,10 @@ export class LocationResolver implements IAPIResolver{
 
     getMutationResolvers() {
         return this.resolvers.Mutation
+    }
+
+    getResolvers() {
+        return this.resolvers
     }
 
 }

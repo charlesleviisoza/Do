@@ -38,12 +38,12 @@ export const getSampleServices = (): ISampleServices => {
     environService.getVariables = jest.fn(()=>SAMPLE_ENVIRONMENT);
     const loggerService: LoggerService = new LoggerService(environService);
     const persistanceService: PersistanceService = new PersistanceService(environService, loggerService);
-    const locationService: LocationService = new LocationService(persistanceService, environService);
-    const locationResolver: LocationResolver = new LocationResolver(locationService);
-    const characterService: CharacterService = new CharacterService(persistanceService, environService)
-    const characterResolver: CharacterResolver = new CharacterResolver(characterService)
-    const episodeService: EpisodeService = new EpisodeService(persistanceService, environService)
-    const episodeResolver: EpisodeResolver = new EpisodeResolver(episodeService)
+    const characterService: CharacterService = new CharacterService(persistanceService)
+    const locationService: LocationService = new LocationService(persistanceService);
+    const episodeService: EpisodeService = new EpisodeService(persistanceService)
+    const characterResolver: CharacterResolver = new CharacterResolver(locationService, characterService, episodeService)
+    const locationResolver: LocationResolver = new LocationResolver(locationService, characterService);
+    const episodeResolver: EpisodeResolver = new EpisodeResolver(episodeService, characterService)
     const resolverService: ResolverService = new ResolverService(locationResolver, characterResolver, episodeResolver);
 
     return {

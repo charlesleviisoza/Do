@@ -1,4 +1,3 @@
-import { IEnvironmentService } from "@config/env";
 import { provide } from "@config/ioc/inversify.config";
 import { TYPE } from "@config/ioc/types";
 import { STATUS } from "@enums/status.enum";
@@ -12,8 +11,7 @@ import { IEpisodeService } from ".";
 export class EpisodeService implements IEpisodeService{
 
     constructor(
-        @inject(TYPE.IPersistanceService) private persistanceService: IPersistanceService,
-        @inject(TYPE.IEnvironmentService) private environmentService: IEnvironmentService
+        @inject(TYPE.IPersistanceService) private persistanceService: IPersistanceService
     ){}
 
     async associateEpisodeCharacter(episodeId: number, characterId: number): Promise<{ status: STATUS }> {
@@ -40,6 +38,16 @@ export class EpisodeService implements IEpisodeService{
         return episode ? await this.transformEpisode(episode) : undefined
     }
 
+    async getEpisodes(episodeIds: number[]): Promise<IEpisode[]> {
+        const episodes = await this.persistanceService.models.Episode.findAll({
+            raw: true,
+            where: {
+                id: episodeIds
+            }
+        })
+        return await Promise.all(episodes.map(async e => await this.transformEpisode(e)))
+    }
+
     async getAllEpisodes(): Promise<IEpisode[]> {
         const episodes = await this.persistanceService.models.Episode.findAll({
             raw: true
@@ -61,11 +69,6 @@ export class EpisodeService implements IEpisodeService{
 
     transformEpisode = async (episode: IEpisodeSchema): Promise<IEpisode> => {
         const characters = await this.persistanceService.models.EpisodeCharacter.findAll({
-            include:{
-                as: 'character',
-                attributes: ['id'],
-                model: this.persistanceService.models.Character
-            },
             raw: true,
             where: {
                 episodeId: episode.id
@@ -73,12 +76,11 @@ export class EpisodeService implements IEpisodeService{
         })
         const episodeResult: IEpisode = {
             air_date: episode.air_date,
-            characters: characters.map(c=>`${this.environmentService.getVariables().hostname}/character/${(c as any)['character.id']}`),
+            characters: characters.map(c=>c.characterId),
             created: episode.created,
             episode: episode.episode,
             id: episode.id,
-            name: episode.name,
-            url: `${this.environmentService.getVariables().hostname}/episode/${episode.id}`
+            name: episode.name
         }
         return episodeResult
     }

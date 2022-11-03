@@ -1,13 +1,13 @@
 import { addParents } from "@utils/databaseTools";
 import { DataTypes, Model } from "sequelize";
+import { ICharacter } from "./Character";
 
 export interface IEpisode {
   id: number
   name: string
   air_date: string
   episode: string
-  characters: string[]
-  url: string
+  characters?: number[]
   created: string
 }
 

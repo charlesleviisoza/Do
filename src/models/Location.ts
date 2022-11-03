@@ -1,5 +1,6 @@
 import { addParents } from "@utils/databaseTools";
 import { DataTypes, Model } from "sequelize";
+import { ICharacter } from "./Character";
 
 export interface ILocation {
     id: number
@@ -7,8 +8,7 @@ export interface ILocation {
     type: string
     dimension: string
     created: string
-    url: string
-    residents: string[]
+    residents: number[]
 }
 
 export interface ILocationSchema {

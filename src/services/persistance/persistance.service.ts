@@ -71,6 +71,7 @@ export class PersistanceService implements IPersistanceService{
             },
             {
                 as: 'location',
+                foreignKey: 'locationId',
                 instance: Location,
                 one: false
             }

@@ -8,6 +8,7 @@ import { InternalServerError } from "@errors/internalServer.error";
 import { EpisodeResolverModels } from "./episode.resolver.model";
 import { IEpisodeService } from "@services/episode";
 import { ItemNoExistsError } from "@errors/itemNoExists.error";
+import { ICharacterService } from "@services/character";
 
 @provide(TYPE.EpisodeResolver)
 export class EpisodeResolver implements IAPIResolver{
@@ -16,7 +17,8 @@ export class EpisodeResolver implements IAPIResolver{
     private resolvers: IResolvers<any>
 
     constructor(
-        @inject(TYPE.IEpisodeService) private episodeService: IEpisodeService
+        @inject(TYPE.IEpisodeService) private episodeService: IEpisodeService,
+        @inject(TYPE.ICharacterService) private characterService: ICharacterService
     ){
         this.typeDefs = `
 
@@ -45,12 +47,17 @@ export class EpisodeResolver implements IAPIResolver{
                 name: String!
                 air_date: String!
                 episode: String!
-                characters: [String]!
-                url: String!
+                characters: [CharacterDetails]!
                 created: String!
             }
         `
         this.resolvers = {
+            EpisodeDetails: {
+                characters: async ({ characters }, _) => {
+                    const result = await this.characterService.getCharacters(characters);
+                    return result
+                }
+            },
             Mutation: {
                 associateEpisodeCharacter: async (_, { episodeId, characterId }) => {
                     const result = await this.episodeService.associateEpisodeCharacter(episodeId, characterId)
@@ -88,6 +95,10 @@ export class EpisodeResolver implements IAPIResolver{
 
     getMutationResolvers() {
         return this.resolvers.Mutation
+    }
+
+    getResolvers() {
+        return this.resolvers
     }
 
 }
