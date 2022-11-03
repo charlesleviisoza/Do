@@ -3,8 +3,9 @@ import { TYPE } from "@config/ioc/types";
 import { InternalServerError } from "@errors/internalServer.error";
 import { ICharacter, ICharacterSchema } from "@models/Character";
 import { IPersistanceService } from "@services/persistance";
+import { IPagination } from "@utils/schemas";
 import { inject } from "inversify";
-import { ICharacterService } from ".";
+import { ICharacterFilters, ICharacterService } from ".";
 
 @provide(TYPE.ICharacterService)
 export class CharacterService implements ICharacterService{
@@ -33,11 +34,23 @@ export class CharacterService implements ICharacterService{
         return await Promise.all(characters.map(async c => this.transformCharacter(c)))
     }
 
-    async getAllCharacters(): Promise<ICharacter[]> {
-        const characters = await this.persistanceService.models.Character.findAll({
-            raw: true
+    async getAllCharacters(filters?:ICharacterFilters, pagination?: IPagination): Promise<{count: number, result: ICharacter[]}> {
+        const characters = await this.persistanceService.models.Character.findAndCountAll({
+            raw: true,
+            ...(filters && {
+                where: {
+                    ...filters
+                }
+            }),
+            ...(pagination && {
+                limit: pagination.limit,
+                offset: (pagination.page - 1) * pagination.limit
+            })
         });
-        return await Promise.all(characters.map(async c => this.transformCharacter(c)))
+        return {
+            count: characters.count,
+            result: await Promise.all(characters.rows.map(async c => this.transformCharacter(c)))
+        }
     }
 
     async createCharacter(character: ICharacterSchema){

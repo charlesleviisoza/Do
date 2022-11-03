@@ -4,11 +4,14 @@ import { inject } from "inversify";
 import { IResolvers } from "@graphql-tools/utils"
 import { IAPIResolver } from "..";
 import { ItemNoExistsError } from "@errors/itemNoExists.error";
-import { validateJoi } from "@utils/joi";
+import { paginationValidator, validateJoi } from "@utils/joi";
 import { InternalServerError } from "@errors/internalServer.error";
 import { ILocationService } from "@services/location";
 import { LocationResolverModels } from "./location.resolver.model";
 import { ICharacterService } from "@services/character";
+import { IInfoResponse } from "@utils/schemas";
+import { ILocation } from "@models/Location";
+import { getPaginationInfo } from "@utils/pagination";
 
 @provide(TYPE.LocationResolver)
 export class LocationResolver implements IAPIResolver{
@@ -22,12 +25,17 @@ export class LocationResolver implements IAPIResolver{
     ){
         this.typeDefs = `
             type Query {
-                locations: [LocationDetails]
+                locations(filters: LocationFilters, pagination: Pagination): LocationsResult
                 location(locationId: Int!): LocationDetails
             }
 
             type Mutation {
                 createLocation(location: LocationCreate): LocationCreationResult
+            }
+
+            type LocationsResult {
+                info: Info!
+                result: [LocationDetails]!
             }
 
             type LocationCreationResult {
@@ -38,6 +46,12 @@ export class LocationResolver implements IAPIResolver{
                 name: String!
                 type: String!
                 dimension: String!
+            }
+
+            input LocationFilters {
+                name: String
+                type: String
+                dimension: String
             }
 
             type LocationDetails {
@@ -73,8 +87,24 @@ export class LocationResolver implements IAPIResolver{
                     if(!result) throw new ItemNoExistsError('Item does not exist')
                     return result
                 },
-                locations: async () => {
-                    return await this.locationService.getAllLocations()
+                locations: async (_, {filters, pagination}) => {
+                    const validationResult = validateJoi(LocationResolverModels.filters, filters)
+                    if(!validationResult.valid){
+                        throw new InternalServerError(validationResult.error?.message || 'Validation error')
+                    }
+                    const validationResultPaginator = validateJoi(paginationValidator(), pagination)
+                    if(!validationResultPaginator.valid){
+                        throw new InternalServerError(validationResultPaginator.error?.message || 'Validation error')
+                    }
+                    const locations = await this.locationService.getAllLocations(filters, pagination)
+                    const result: IInfoResponse<ILocation> = {
+                        info: {
+                            count: locations.count,
+                            ...(pagination && getPaginationInfo(pagination.page, pagination.limit, locations.count))
+                        },
+                        result: locations.result
+                    }
+                    return result
                 }
             }
         }

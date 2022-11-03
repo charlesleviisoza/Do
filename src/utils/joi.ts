@@ -11,3 +11,8 @@ export const validateJoi = (joiScheme: Joi.Schema, data: any) => {
         valid: true
     }
 }
+
+export const paginationValidator = () => Joi.object().keys({
+    limit: Joi.number().min(1).required(),
+    page: Joi.number().min(1).required()
+}).optional()

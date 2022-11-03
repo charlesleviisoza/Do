@@ -4,8 +4,9 @@ import { STATUS } from "@enums/status.enum";
 import { InternalServerError } from "@errors/internalServer.error";
 import { IEpisode, IEpisodeSchema } from "@models/Episode";
 import { IPersistanceService } from "@services/persistance";
+import { IPagination } from "@utils/schemas";
 import { inject } from "inversify";
-import { IEpisodeService } from ".";
+import { IEpisodeFilters, IEpisodeService } from ".";
 
 @provide(TYPE.IEpisodeService)
 export class EpisodeService implements IEpisodeService{
@@ -48,11 +49,23 @@ export class EpisodeService implements IEpisodeService{
         return await Promise.all(episodes.map(async e => await this.transformEpisode(e)))
     }
 
-    async getAllEpisodes(): Promise<IEpisode[]> {
-        const episodes = await this.persistanceService.models.Episode.findAll({
-            raw: true
+    async getAllEpisodes(filters?:IEpisodeFilters, pagination?: IPagination): Promise<{count: number, result: IEpisode[]}> {
+        const episodes = await this.persistanceService.models.Episode.findAndCountAll({
+            raw: true,
+            ...(filters && {
+                where: {
+                    ...filters
+                }
+            }),
+            ...(pagination && {
+                limit: pagination.limit,
+                offset: (pagination.page - 1) * pagination.limit
+            })
         });
-        return await Promise.all(episodes.map(async e => await this.transformEpisode(e)))
+        return {
+            count: episodes.count,
+            result: await Promise.all(episodes.rows.map(async e => this.transformEpisode(e)))
+        }
     }
 
     async createEpisode(episode: IEpisodeSchema){

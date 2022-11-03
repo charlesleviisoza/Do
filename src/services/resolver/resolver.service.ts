@@ -29,6 +29,18 @@ export class ResolverService implements IResolverService{
             type Status {
                 status: Int!
             }
+
+            type Info {
+                count: Int
+                pages: Int
+                next: Int
+                prev: Int
+            }
+
+            input Pagination {
+                limit: Int!
+                page: Int!
+            }
         `
         this.resolvers = this.initResolvers(resolvers)
     }

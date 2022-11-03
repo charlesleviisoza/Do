@@ -3,13 +3,16 @@ import { TYPE } from "@config/ioc/types";
 import { inject } from "inversify";
 import { IResolvers } from "@graphql-tools/utils"
 import { IAPIResolver } from "..";
-import { validateJoi } from "@utils/joi";
+import { paginationValidator, validateJoi } from "@utils/joi";
 import { InternalServerError } from "@errors/internalServer.error";
 import { ICharacterService } from "@services/character";
 import { CharacterResolverModels } from "./character.resolver.model";
 import { ItemNoExistsError } from "@errors/itemNoExists.error";
 import { ILocationService } from "@services/location";
 import { IEpisodeService } from "@services/episode";
+import { IInfoResponse } from "@utils/schemas";
+import { ICharacter } from "@models/Character";
+import { getPaginationInfo } from "@utils/pagination";
 
 @provide(TYPE.CharacterResolver)
 export class CharacterResolver implements IAPIResolver{
@@ -25,7 +28,7 @@ export class CharacterResolver implements IAPIResolver{
         this.typeDefs = `
 
             type Query {
-                characters: [CharacterDetails]!
+                characters(filters: CharacterFilters, pagination: Pagination): CharactersResult!
                 character(characterId: Int!): CharacterDetails
             }
 
@@ -33,8 +36,21 @@ export class CharacterResolver implements IAPIResolver{
                 createCharacter(character: CharacterCreate): CharacterCreationResult
             }
 
+            type CharactersResult {
+                info: Info!
+                result: [CharacterDetails]!
+            }
+
             type CharacterCreationResult {
                 id: Int!
+            }
+
+            input CharacterFilters {
+                name: String
+                status: String
+                species: String
+                type: String
+                gender: String
             }
 
             input CharacterCreate {
@@ -95,8 +111,24 @@ export class CharacterResolver implements IAPIResolver{
                     if(!result) throw new ItemNoExistsError('Item does not exist')
                     return result
                 },
-                characters: async () => {
-                    return await this.characterService.getAllCharacters()
+                characters: async (_, {filters, pagination}) => {
+                    const validationResult = validateJoi(CharacterResolverModels.filters, filters)
+                    if(!validationResult.valid){
+                        throw new InternalServerError(validationResult.error?.message || 'Validation error')
+                    }
+                    const validationResultPaginator = validateJoi(paginationValidator(), pagination)
+                    if(!validationResultPaginator.valid){
+                        throw new InternalServerError(validationResultPaginator.error?.message || 'Validation error')
+                    }
+                    const characters = await this.characterService.getAllCharacters(filters, pagination)
+                    const result: IInfoResponse<ICharacter> = {
+                        info: {
+                            count: characters.count,
+                            ...(pagination && getPaginationInfo(pagination.page, pagination.limit, characters.count))
+                        },
+                        result: characters.result
+                    }
+                    return result
                 }
             }
         }

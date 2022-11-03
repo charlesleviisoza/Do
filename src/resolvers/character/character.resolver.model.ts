@@ -1,4 +1,3 @@
-import { AttachmentTypes } from "@enums/attachmentTypes.enum";
 import Joi from "joi";
 
 export const CharacterResolverModels = {
@@ -11,5 +10,12 @@ export const CharacterResolverModels = {
         species: Joi.string().required(),
         status: Joi.string().required(),
         type: Joi.string().required(),
-    }).required()
+    }).required(),
+    filters: Joi.object().keys({
+        gender: Joi.string().optional(),
+        name: Joi.string().optional(),
+        species: Joi.string().optional(),
+        status: Joi.string().optional(),
+        type: Joi.string().optional()
+    }).optional()
 }

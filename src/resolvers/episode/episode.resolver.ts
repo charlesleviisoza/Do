@@ -3,12 +3,15 @@ import { TYPE } from "@config/ioc/types";
 import { inject } from "inversify";
 import { IResolvers } from "@graphql-tools/utils"
 import { IAPIResolver } from "..";
-import { validateJoi } from "@utils/joi";
+import { paginationValidator, validateJoi } from "@utils/joi";
 import { InternalServerError } from "@errors/internalServer.error";
 import { EpisodeResolverModels } from "./episode.resolver.model";
 import { IEpisodeService } from "@services/episode";
 import { ItemNoExistsError } from "@errors/itemNoExists.error";
 import { ICharacterService } from "@services/character";
+import { IInfoResponse } from "@utils/schemas";
+import { IEpisode } from "@models/Episode";
+import { getPaginationInfo } from "@utils/pagination";
 
 @provide(TYPE.EpisodeResolver)
 export class EpisodeResolver implements IAPIResolver{
@@ -23,8 +26,9 @@ export class EpisodeResolver implements IAPIResolver{
         this.typeDefs = `
 
             type Query {
-                episodes: [EpisodeDetails]!
+                episodes(filters: EpisodeFilters, pagination: Pagination): EpisodesResult!
                 episode(episodeId: Int!): EpisodeDetails
+                episodesByIds(ids: [Int!]!): [EpisodeDetails]!
             }
 
             type Mutation {
@@ -32,8 +36,18 @@ export class EpisodeResolver implements IAPIResolver{
                 associateEpisodeCharacter(episodeId: Int!, characterId: Int!): Status
             }
 
+            type EpisodesResult {
+                info: Info!
+                result: [EpisodeDetails]!
+            }
+
             type EpisodeCreationResult {
                 id: Int!
+            }
+
+            input EpisodeFilters {
+                name: String
+                episode: String
             }
 
             input EpisodeCreate {
@@ -78,8 +92,28 @@ export class EpisodeResolver implements IAPIResolver{
                     if(!result) throw new ItemNoExistsError('Item does not exist')
                     return result
                 },
-                episodes: async () => {
-                    return await this.episodeService.getAllEpisodes()
+                episodes: async (_, {filters, pagination}) => {
+                    const validationResult = validateJoi(EpisodeResolverModels.filters, filters)
+                    if(!validationResult.valid){
+                        throw new InternalServerError(validationResult.error?.message || 'Validation error')
+                    }
+                    const validationResultPaginator = validateJoi(paginationValidator(), pagination)
+                    if(!validationResultPaginator.valid){
+                        throw new InternalServerError(validationResultPaginator.error?.message || 'Validation error')
+                    }
+                    const episodes = await this.episodeService.getAllEpisodes(filters, pagination)
+                    const result: IInfoResponse<IEpisode> = {
+                        info: {
+                            count: episodes.count,
+                            ...(pagination && getPaginationInfo(pagination.page, pagination.limit, episodes.count))
+                        },
+                        result: episodes.result
+                    }
+                    return result
+                },
+                episodesByIds: async (_, {ids}) => {
+                    const result = await this.episodeService.getEpisodes(ids);
+                    return result
                 }
             }
         }

@@ -1,4 +1,3 @@
-import { AttachmentTypes } from "@enums/attachmentTypes.enum";
 import Joi from "joi";
 
 export const EpisodeResolverModels = {
@@ -6,5 +5,9 @@ export const EpisodeResolverModels = {
         air_date: Joi.string().required(),
         episode: Joi.string().required(),
         name: Joi.string().required()
-    }).required()
+    }).required(),
+    filters: Joi.object().keys({
+        episode: Joi.string().optional(),
+        name: Joi.string().optional()
+    }).optional()
 }
