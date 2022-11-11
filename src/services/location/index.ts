@@ -12,4 +12,5 @@ export interface ILocationService {
     getLocation(locationId: number): Promise<ILocation | undefined>
     getLocations(locationIds: number[]): Promise<ILocation[]>
     createLocation(location: ILocationSchema): Promise<{id: number}>
+    deleteLocations(locationIds: number[]): Promise<{locationsDeleted: number}>
 }

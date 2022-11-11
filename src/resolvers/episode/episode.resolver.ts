@@ -32,8 +32,9 @@ export class EpisodeResolver implements IAPIResolver{
             }
 
             type Mutation {
-                createEpisode(episode: EpisodeCreate): EpisodeCreationResult
                 associateEpisodeCharacter(episodeId: Int!, characterId: Int!): Status
+                createEpisode(episode: EpisodeCreate): EpisodeCreationResult
+                deleteEpisodes(episodeIds: [Int!]): EpisodeDeletionResult
             }
 
             type EpisodesResult {
@@ -43,6 +44,10 @@ export class EpisodeResolver implements IAPIResolver{
 
             type EpisodeCreationResult {
                 id: Int!
+            }
+
+            type EpisodeDeletionResult {
+                episodesDeleted: Int!
             }
 
             input EpisodeFilters {
@@ -84,6 +89,10 @@ export class EpisodeResolver implements IAPIResolver{
                     }
                     const generatedObject = await this.episodeService.createEpisode(episode)
                     return generatedObject
+                },
+                deleteEpisodes: async (_, {episodeIds}) => {
+                    const deletedEpisodes = await this.episodeService.deleteEpisodes(episodeIds)
+                    return deletedEpisodes
                 }
             },
             Query: {

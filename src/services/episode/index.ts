@@ -13,4 +13,5 @@ export interface IEpisodeService {
     getEpisodes(episodeIds: number[]): Promise<IEpisode[]>
     createEpisode(episode: IEpisodeSchema): Promise<{id: number}>
     associateEpisodeCharacter(episodeId: number, characterId: number): Promise<{status: STATUS}>
+    deleteEpisodes(episodeIds: number[]): Promise<{episodesDeleted: number}>
 }

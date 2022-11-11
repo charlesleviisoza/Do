@@ -32,6 +32,7 @@ export class LocationResolver implements IAPIResolver{
 
             type Mutation {
                 createLocation(location: LocationCreate): LocationCreationResult
+                deleteLocations(locationIds: [Int!]): LocationDeletionResult
             }
 
             type LocationsResult {
@@ -41,6 +42,10 @@ export class LocationResolver implements IAPIResolver{
 
             type LocationCreationResult {
                 id: Int!
+            }
+
+            type LocationDeletionResult {
+                locationsDeleted: Int!
             }
 
             input LocationCreate {
@@ -80,6 +85,10 @@ export class LocationResolver implements IAPIResolver{
                     const generatedObject = await this.locationService.createLocation(location)
                     return generatedObject
 
+                },
+                deleteLocations: async (_, {locationIds}) => {
+                    const deletedLocations = await this.locationService.deleteLocations(locationIds)
+                    return deletedLocations
                 }
             },
             Query: {

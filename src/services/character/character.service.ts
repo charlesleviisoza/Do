@@ -65,6 +65,21 @@ export class CharacterService implements ICharacterService{
         }
     }
 
+    async deleteCharacters(characterIds: number[]): Promise<{charactersDeleted: number}>{
+        try{
+            const deletedCharacters = await this.persistanceService.models.Character.destroy({
+                where: {
+                    id: characterIds
+                }
+            })
+            return {
+                charactersDeleted: deletedCharacters
+            }
+        }catch(err: any){
+            throw new InternalServerError('Error deleteting the entities')
+        }
+    }
+
     transformCharacter = async (character: ICharacterSchema): Promise<ICharacter> => {
         const episodes = await this.persistanceService.models.EpisodeCharacter.findAll({
             raw: true,

@@ -65,6 +65,21 @@ export class LocationService implements ILocationService{
         }
     }
 
+    async deleteLocations(locationIds: number[]): Promise<{locationsDeleted: number}>{
+        try{
+            const deletedLocations = await this.persistanceService.models.Location.destroy({
+                where: {
+                    id: locationIds
+                }
+            })
+            return {
+                locationsDeleted: deletedLocations
+            }
+        }catch(err: any){
+            throw new InternalServerError('Error deleteting the entities')
+        }
+    }
+
     transformLocation = async (location: ILocationSchema): Promise<ILocation> => {
         const characters = await this.persistanceService.models.Character.findAll({
             where: {

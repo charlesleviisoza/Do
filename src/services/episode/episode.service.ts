@@ -80,6 +80,21 @@ export class EpisodeService implements IEpisodeService{
         }
     }
 
+    async deleteEpisodes(episodeIds: number[]): Promise<{episodesDeleted: number}>{
+        try{
+            const deletedEpisodes = await this.persistanceService.models.Episode.destroy({
+                where: {
+                    id: episodeIds
+                }
+            })
+            return {
+                episodesDeleted: deletedEpisodes
+            }
+        }catch(err: any){
+            throw new InternalServerError('Error deleteting the entities')
+        }
+    }
+
     transformEpisode = async (episode: IEpisodeSchema): Promise<IEpisode> => {
         const characters = await this.persistanceService.models.EpisodeCharacter.findAll({
             raw: true,

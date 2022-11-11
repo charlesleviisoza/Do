@@ -35,6 +35,7 @@ export class CharacterResolver implements IAPIResolver{
 
             type Mutation {
                 createCharacter(character: CharacterCreate): CharacterCreationResult
+                deleteCharacters(characterIds: [Int!]): CharacterDeletionResult
             }
 
             type CharactersResult {
@@ -44,6 +45,10 @@ export class CharacterResolver implements IAPIResolver{
 
             type CharacterCreationResult {
                 id: Int!
+            }
+
+            type CharacterDeletionResult {
+                charactersDeleted: Int!
             }
 
             input CharacterFilters {
@@ -103,7 +108,10 @@ export class CharacterResolver implements IAPIResolver{
                     }
                     const generatedObject = await this.characterService.createCharacter(character)
                     return generatedObject
-
+                },
+                deleteCharacters: async (_, {characterIds}) => {
+                    const deletedCharacters = await this.characterService.deleteCharacters(characterIds)
+                    return deletedCharacters
                 }
             },
             Query: {
