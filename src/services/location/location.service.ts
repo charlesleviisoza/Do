@@ -1,11 +1,12 @@
 import { provide } from "@config/ioc/inversify.config";
 import { TYPE } from "@config/ioc/types";
+import { STATUS } from "@enums/status.enum";
 import { InternalServerError } from "@errors/internalServer.error";
 import { ILocation, ILocationSchema } from "@models/Location";
 import { IPersistanceService } from "@services/persistance";
 import { IPagination } from "@utils/schemas";
 import { inject } from "inversify";
-import { ILocationFilters, ILocationService } from ".";
+import { ILocationFilters, ILocationService, ILocationUpdate } from ".";
 
 @provide(TYPE.ILocationService)
 export class LocationService implements ILocationService{
@@ -77,6 +78,21 @@ export class LocationService implements ILocationService{
             }
         }catch(err: any){
             throw new InternalServerError('Error deleteting the entities')
+        }
+    }
+
+    async editLocation(locationId: number, newLocationData: ILocationUpdate): Promise<{status: STATUS}>{
+        try{
+            const result = await this.persistanceService.models.Location.update(newLocationData,{
+                where: {
+                    id: locationId
+                }
+            })
+            return {
+                status: result[0] > 0 ? STATUS.SUCCESS : STATUS.ERROR
+            }
+        }catch(err: any){
+            throw new InternalServerError('Error updating the entities')
         }
     }
 

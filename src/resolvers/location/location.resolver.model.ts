@@ -10,5 +10,10 @@ export const LocationResolverModels = {
         dimension: Joi.string().optional(),
         name: Joi.string().optional(),
         type: Joi.string().optional()
-    }).optional()
+    }).optional(),
+    update: Joi.object().keys({
+        dimension: Joi.string().optional(),
+        name: Joi.string().optional(),
+        type: Joi.string().optional()
+    }).optional(),
 }

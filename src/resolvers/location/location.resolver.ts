@@ -33,6 +33,7 @@ export class LocationResolver implements IAPIResolver{
             type Mutation {
                 createLocation(location: LocationCreate): LocationCreationResult
                 deleteLocations(locationIds: [Int!]): LocationDeletionResult
+                editLocation(locationId: Int!, newLocationData: LocationUpdate!): Status
             }
 
             type LocationsResult {
@@ -52,6 +53,12 @@ export class LocationResolver implements IAPIResolver{
                 name: String!
                 type: String!
                 dimension: String!
+            }
+
+            input LocationUpdate {
+                name: String
+                type: String
+                dimension: String
             }
 
             input LocationFilters {
@@ -89,6 +96,14 @@ export class LocationResolver implements IAPIResolver{
                 deleteLocations: async (_, {locationIds}) => {
                     const deletedLocations = await this.locationService.deleteLocations(locationIds)
                     return deletedLocations
+                },
+                editLocation: async (_, {locationId, newLocationData}) => {
+                    const validationResult = validateJoi(LocationResolverModels.update, newLocationData)
+                    if(!validationResult.valid){
+                        throw new InternalServerError(validationResult.error?.message || 'Validation error')
+                    }
+                    const result = await this.locationService.editLocation(locationId, newLocationData)
+                    return result
                 }
             },
             Query: {
