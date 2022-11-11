@@ -19,6 +19,7 @@ describe('Environment variables', ()=>{
             DATABASE_PORT: "test",
             DATABASE_SSL: "TRUE",
             DATABASE_USER: "test",
+            GRAPHQL_UI: "TRUE",
             HOSTNAME: "test",
             LOGGER_LEVEL: 'OFF',
             MIGRATE_DATABASE: "FALSE",

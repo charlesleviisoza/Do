@@ -13,6 +13,8 @@ import { ILoggerService } from "@services/logger";
 import { IResolverService } from "@services/resolver";
 import { ApiErrors } from "@enums/errors.enum";
 import { IPersistanceService } from "@services/persistance";
+import depthLimit from "graphql-depth-limit";
+import { IEnvironmentVariables } from "@config/env/environmentVariables";
 
 // Get environment
 const environmentService: IEnvironmentService = container.get(TYPE.IEnvironmentService);
@@ -33,10 +35,22 @@ const persistanceService: IPersistanceService = container.get(TYPE.IPersistanceS
 
 const envVariables = environmentService.getVariables()
 
+// Graphql Validators
+
+const getGraphqlValidators = (env: IEnvironmentVariables) => {
+  const validators = []
+  if(env.depthLimit){
+    validators.push(depthLimit(Number(env.depthLimit)))
+  }
+  return validators
+}
+
 // create server
 const server = new InversifyExpressServer(container, null, {
   rootPath: envVariables.rootPath
 });
+
+
 server.setConfig((app) => {
   // add body parser
   app.use(bodyParser.urlencoded({
@@ -59,8 +73,9 @@ server.setConfig((app) => {
           message: err.message
         }
       },
-      graphiql: envVariables.nodeEnv !== 'production',
-      schema: resolverService.getExecutableSchema()
+      graphiql: envVariables.graphqlUi,
+      schema: resolverService.getExecutableSchema(),
+      validationRules: getGraphqlValidators(envVariables)
     }),
   );
 

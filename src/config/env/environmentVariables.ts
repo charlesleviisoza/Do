@@ -1,3 +1,4 @@
+import { joiStringInteger } from "@utils/joi"
 import Joi from "joi"
 
 export interface IEnvironmentVariables{
@@ -7,6 +8,8 @@ export interface IEnvironmentVariables{
     databasePort: string
     databaseSSL: boolean
     databaseUser: string
+    depthLimit?: string
+    graphqlUi: boolean
     hostname: string
     nodeEnv: string
     loggerlevel: string
@@ -22,6 +25,8 @@ export const environmentSchema = Joi.object().keys({
     DATABASE_PORT: Joi.string().required(),
     DATABASE_SSL: Joi.string().required(),
     DATABASE_USER: Joi.string().required(),
+    DEPTH_LIMIT: joiStringInteger().optional().allow(''),
+    GRAPHQL_UI: Joi.string().required(),
     HOSTNAME: Joi.string().required(),
     LOGGER_LEVEL: Joi.string().required(),
     MIGRATE_DATABASE: Joi.string().required(),

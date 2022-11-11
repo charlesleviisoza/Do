@@ -25,6 +25,7 @@ export const SAMPLE_ENVIRONMENT: IEnvironmentVariables = {
     databasePort: 'test',
     databaseSSL: false,
     databaseUser: 'test',
+    graphqlUi: true,
     hostname: 'test',
     loggerlevel: 'OFF',
     migrateDatabase: false,
