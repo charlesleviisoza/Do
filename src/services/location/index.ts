@@ -10,5 +10,6 @@ export interface ILocationFilters {
 export interface ILocationService {
     getAllLocations(filters?:ILocationFilters, pagination?: IPagination): Promise<{count: number, result: ILocation[]}>
     getLocation(locationId: number): Promise<ILocation | undefined>
+    getLocations(locationIds: number[]): Promise<ILocation[]>
     createLocation(location: ILocationSchema): Promise<{id: number}>
 }

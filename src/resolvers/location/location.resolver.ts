@@ -27,6 +27,7 @@ export class LocationResolver implements IAPIResolver{
             type Query {
                 locations(filters: LocationFilters, pagination: Pagination): LocationsResult
                 location(locationId: Int!): LocationDetails
+                locationsByIds(ids: [Int!]!): [LocationDetails]!
             }
 
             type Mutation {
@@ -104,6 +105,10 @@ export class LocationResolver implements IAPIResolver{
                         },
                         result: locations.result
                     }
+                    return result
+                },
+                locationsByIds: async (_, {ids}) => {
+                    const result = await this.locationService.getLocations(ids);
                     return result
                 }
             }

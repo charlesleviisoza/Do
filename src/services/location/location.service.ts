@@ -24,6 +24,16 @@ export class LocationService implements ILocationService{
         return location ? await this.transformLocation(location) : undefined
     }
 
+    async getLocations(locationIds: number[]): Promise<ILocation[]> {
+        const locations = await this.persistanceService.models.Location.findAll({
+            raw: true,
+            where: {
+                id: locationIds
+            }
+        })
+        return await Promise.all(locations.map(async l => await this.transformLocation(l)))
+    }
+
     async getAllLocations(filters?:ILocationFilters, pagination?: IPagination): Promise<{count: number, result: ILocation[]}> {
         const locations = await this.persistanceService.models.Location.findAndCountAll({
             raw: true,

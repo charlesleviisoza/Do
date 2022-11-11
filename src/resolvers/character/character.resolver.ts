@@ -30,6 +30,7 @@ export class CharacterResolver implements IAPIResolver{
             type Query {
                 characters(filters: CharacterFilters, pagination: Pagination): CharactersResult!
                 character(characterId: Int!): CharacterDetails
+                charactersByIds(ids: [Int!]!): [CharacterDetails]!
             }
 
             type Mutation {
@@ -128,6 +129,10 @@ export class CharacterResolver implements IAPIResolver{
                         },
                         result: characters.result
                     }
+                    return result
+                },
+                charactersByIds: async (_, {ids}) => {
+                    const result = await this.characterService.getCharacters(ids);
                     return result
                 }
             }
