@@ -54,13 +54,7 @@ npm run dev
 
 ### Production
 
-Run the following command to build the project.
-
-```bash
-npm build
-```
-
-Then, run the following command to start the project.
+This is the command to run the project: 
 
 ```bash
 npm start
