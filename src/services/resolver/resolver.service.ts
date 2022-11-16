@@ -26,19 +26,49 @@ export class ResolverService implements IResolverService{
         this.typeDefs = `
             ${this.initTypeDefs(resolvers)}
 
+            """
+            Status of the result
+            """
             type Status {
+                """
+                1: Success - 0: Error
+                """
                 status: Int!
             }
 
+            """
+            Information of the result
+            """
             type Info {
+                """
+                Total number of records
+                """
                 count: Int
+                """
+                Total number of pages (if using pagination)
+                """
                 pages: Int
+                """
+                Next page number (if using pagination)
+                """
                 next: Int
+                """
+                Previous page number (if using pagination)
+                """
                 prev: Int
             }
 
+            """
+            Pagination input
+            """
             input Pagination {
+                """
+                Number of records per page
+                """
                 limit: Int!
+                """
+                Page number
+                """
                 page: Int!
             }
         `

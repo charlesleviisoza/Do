@@ -19,7 +19,7 @@ export interface ICharacter {
   created: string
   origin?: number
   location?: number
-  episode?: number[]
+  episodes?: number[]
 }
 
 export interface ICharacterSchema {

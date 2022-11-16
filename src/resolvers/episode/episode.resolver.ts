@@ -26,47 +26,128 @@ export class EpisodeResolver implements IAPIResolver{
         this.typeDefs = `
 
             type Query {
+                """
+                Get all episodes
+                """
                 episodes(filters: EpisodeFilters, pagination: Pagination): EpisodesResult!
+                """
+                Get one episode by its id
+                """
                 episode(episodeId: Int!): EpisodeDetails
+                """
+                Get multiple episodes by its ids
+                """
                 episodesByIds(ids: [Int!]!): [EpisodeDetails]!
             }
 
             type Mutation {
+                """
+                Add a character to an episode
+                """
                 associateEpisodeCharacter(episodeId: Int!, characterId: Int!): Status
+                """
+                Create a new episode
+                """
                 createEpisode(episode: EpisodeCreate): EpisodeCreationResult
+                """
+                Delete multiple episodes
+                """
                 deleteEpisodes(episodeIds: [Int!]): EpisodeDeletionResult
             }
 
+            """
+            Result of the episodes query
+            """
             type EpisodesResult {
+                """
+                Infomation of the result
+                """
                 info: Info!
+                """
+                Query result
+                """
                 result: [EpisodeDetails]!
             }
 
+            """
+            Result of the creation of the episode
+            """
             type EpisodeCreationResult {
+                """
+                Generated id of the new episode
+                """
                 id: Int!
             }
 
+            """
+            Result of the deletion of multiple episodes
+            """
             type EpisodeDeletionResult {
+                """
+                Number of deleted episodes
+                """
                 episodesDeleted: Int!
             }
 
+            """
+            Required information to create an episode
+            """
+            input EpisodeCreate {
+                """
+                Episode's name
+                """
+                name: String!
+                """
+                Episode's air date
+                """
+                air_date: String!
+                """
+                Episode's custom id
+                """
+                episode: String!
+            }
+
+            """
+            Optional fields to filter the result
+            """
             input EpisodeFilters {
+                """
+                Episode's name
+                """
                 name: String
+                """
+                Episode's custom id
+                """
                 episode: String
             }
 
-            input EpisodeCreate {
-                name: String!
-                air_date: String!
-                episode: String!
-            }
-
+            """
+            Information of an episode
+            """
             type EpisodeDetails {
+                """
+                Episode's id
+                """
                 id: Int!
+                """
+                Episode's name
+                """
                 name: String!
+                """
+                Episode's air date
+                """
                 air_date: String!
+                """
+                Episode's custom id
+                """
                 episode: String!
+                """
+                List of characters that appear in the episode
+                """
                 characters: [CharacterDetails]!
+                """
+                Episode's creation date
+                """
                 created: String!
             }
         `

@@ -28,65 +28,179 @@ export class CharacterResolver implements IAPIResolver{
         this.typeDefs = `
 
             type Query {
+                """
+                Get all characters
+                """
                 characters(filters: CharacterFilters, pagination: Pagination): CharactersResult!
+                """
+                Get one character by its id
+                """
                 character(characterId: Int!): CharacterDetails
+                """
+                Get multiple characters by its ids
+                """
                 charactersByIds(ids: [Int!]!): [CharacterDetails]!
             }
 
             type Mutation {
+                """
+                Create a new character
+                """
                 createCharacter(character: CharacterCreate): CharacterCreationResult
+                """
+                Delete multiple characters
+                """
                 deleteCharacters(characterIds: [Int!]): CharacterDeletionResult
             }
 
+            """
+            Result of the location query
+            """
             type CharactersResult {
+                """
+                Infomation of the result
+                """
                 info: Info!
+                """
+                Query result
+                """
                 result: [CharacterDetails]!
             }
 
+            """
+            Result of the creation of the character
+            """
             type CharacterCreationResult {
+                """
+                Generated id of the new character
+                """
                 id: Int!
             }
 
+            """
+            Result of the deletion of multiple characters
+            """
             type CharacterDeletionResult {
+                """
+                Number of deleted characters
+                """
                 charactersDeleted: Int!
             }
 
-            input CharacterFilters {
-                name: String
-                status: String
-                species: String
-                type: String
-                gender: String
-            }
-
+            """
+            Required information to create a character
+            """
             input CharacterCreate {
+                """
+                Character's name
+                """
                 name: String!
+                """
+                Character's type
+                """
                 type: String!
+                """
+                Character's status
+                """
                 status: String!
+                """
+                Character's species
+                """
                 species: String!
+                """
+                Character's gender
+                """
                 gender: String!
+                """
+                Character's image
+                """
                 image: String!
+                """
+                Character's origin location's id
+                """
                 originId: Int!
+                """
+                Character's current location's id
+                """
                 locationId: Int!
             }
 
+            """
+            Optional fields to filter the result
+            """
+            input CharacterFilters {
+                """
+                Character's name
+                """
+                name: String
+                """
+                Character's status
+                """
+                status: String
+                """
+                Character's species
+                """
+                species: String
+                """
+                Character's type
+                """
+                type: String
+                """
+                Character's gender
+                """
+                gender: String
+            }
+
+            """
+            Information of a character
+            """
             type CharacterDetails {
+                """
+                Character's id
+                """
                 id: Int!
+                """
+                Character's name
+                """
                 name: String!
+                """
+                Character's type
+                """
                 type: String!
+                """
+                Character's status
+                """
                 status: String!
+                """
+                Character's species
+                """
                 species: String!
+                """
+                Character's gender
+                """
                 gender: String!
+                """
+                Character's image
+                """
                 image: String!
+                """
+                Character's origin location
+                """
                 origin: LocationDetails!
+                """
+                Character's current location
+                """
                 location: LocationDetails!
-                episode: [EpisodeDetails!]
+                """
+                List of episodes in which the character appears
+                """
+                episodes: [EpisodeDetails!]
             }
         `
         this.resolvers = {
             CharacterDetails: {
-                episode: async ({ episode }, _) => {
-                    const result = await this.episodeService.getEpisodes(episode);
+                episodes: async ({ episodes }, _) => {
+                    const result = await this.episodeService.getEpisodes(episodes);
                     return result
                 },
                 location: async ({ location }, _) => {

@@ -89,7 +89,7 @@ export class CharacterService implements ICharacterService{
         })
         const characterResult: ICharacter = {
             created: character.created,
-            episode: episodes.map(e=>e.episodeId),
+            episodes: episodes.map(e=>e.episodeId),
             gender: character.gender,
             id: character.id,
             image: character.image,

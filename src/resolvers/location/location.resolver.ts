@@ -24,55 +24,157 @@ export class LocationResolver implements IAPIResolver{
         @inject(TYPE.ICharacterService) private characterService: ICharacterService
     ){
         this.typeDefs = `
+            """
+            List of queries for the GraphQL API
+            """
             type Query {
+                """
+                Get all locations
+                """
                 locations(filters: LocationFilters, pagination: Pagination): LocationsResult
+                """
+                Get one location by its id
+                """
                 location(locationId: Int!): LocationDetails
+                """
+                Get multiple locations by its ids
+                """
                 locationsByIds(ids: [Int!]!): [LocationDetails]!
             }
 
+            """
+            List of mutations for the GraphQL API
+            """
             type Mutation {
+                """
+                Create a new location
+                """
                 createLocation(location: LocationCreate): LocationCreationResult
+                """
+                Delete multiple locations
+                """
                 deleteLocations(locationIds: [Int!]): LocationDeletionResult
+                """
+                Edit a location
+                """
                 editLocation(locationId: Int!, newLocationData: LocationUpdate!): Status
             }
 
+            """
+            Result of the location query
+            """
             type LocationsResult {
+                """
+                Infomation of the result
+                """
                 info: Info!
+                """
+                Query result
+                """
                 result: [LocationDetails]!
             }
 
+            """
+            Result of the creation of the location
+            """
             type LocationCreationResult {
+                """
+                Generated id of the new location
+                """
                 id: Int!
             }
 
+            """
+            Result of the deletion of multiple locations
+            """
             type LocationDeletionResult {
+                """
+                Number of deleted locations
+                """
                 locationsDeleted: Int!
             }
 
+            """
+            Required information to create a location
+            """
             input LocationCreate {
+                """
+                Location's name
+                """
                 name: String!
+                """
+                Location's type
+                """
                 type: String!
+                """
+                Location's dimension
+                """
                 dimension: String!
             }
 
+            """
+            Optional information to update a location
+            """
             input LocationUpdate {
+                """
+                Location's name
+                """
                 name: String
+                """
+                Location's type
+                """
                 type: String
+                """
+                Location's dimension
+                """
                 dimension: String
             }
 
+            """
+            Optional fields to filter the result
+            """
             input LocationFilters {
+                """
+                Location's name
+                """
                 name: String
+                """
+                Location's type
+                """
                 type: String
+                """
+                Location's dimension
+                """
                 dimension: String
             }
 
+            """
+            Information of a location
+            """
             type LocationDetails {
+                """
+                Location's id
+                """
                 id: Int!
+                """
+                Location's name
+                """
                 name: String!
+                """
+                Location's type
+                """
                 type: String!
+                """
+                Location's dimension
+                """
                 dimension: String!
+                """
+                List of residents (characters)
+                """
                 residents: [CharacterDetails!]
+                """
+                Location's creation date
+                """
                 created: String!
             }
         `
