@@ -1,7 +1,6 @@
 import { ApiError } from "@errors/api.error";
 import { InternalServerError } from "@errors/internalServer.error";
 import { ILoggerService } from "@services/logger";
-import { LoggerService } from "@services/logger/logger.service";
 import * as express from "express";
 
 export const errorFilter = (logger: ILoggerService)=>{

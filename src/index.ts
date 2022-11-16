@@ -15,6 +15,8 @@ import { ApiErrors } from "@enums/errors.enum";
 import { IPersistanceService } from "@services/persistance";
 import depthLimit from "graphql-depth-limit";
 import { IEnvironmentVariables } from "@config/env/environmentVariables";
+import { ApiError } from "@errors/api.error";
+import { InternalServerError } from "@errors/internalServer.error";
 
 // Get environment
 const environmentService: IEnvironmentService = container.get(TYPE.IEnvironmentService);
@@ -50,6 +52,9 @@ const server = new InversifyExpressServer(container, null, {
   rootPath: envVariables.rootPath
 });
 
+server.setErrorConfig((app) => {
+  app.use(errorFilter(loggerService));
+});
 
 server.setConfig((app) => {
   // add body parser
@@ -67,7 +72,15 @@ server.setConfig((app) => {
     `${envVariables.rootPath}/graphql`,
     graphqlHTTP({
       customFormatErrorFn: (err)=>{
-        const error: any = err.originalError
+        const error: any = err.originalError || err
+        if (error) {
+          if(error instanceof ApiError){
+            error.log(loggerService);
+          }else{
+            const genericError = new InternalServerError(error.message);
+            genericError.log(loggerService);
+          }
+      }
         return {
           errorId: error?.errorId || ApiErrors.INTERNAL_SERVER_ERROR,
           message: err.message
@@ -79,10 +92,6 @@ server.setConfig((app) => {
     }),
   );
 
-});
-
-server.setErrorConfig((app) => {
-  app.use(errorFilter(loggerService));
 });
 
 const serverApp = server.build();

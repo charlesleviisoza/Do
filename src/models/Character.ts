@@ -31,6 +31,7 @@ export interface ICharacterSchema {
     gender: string
     image: string
     created: string
+    originId: number
     locationId: number
 }
 
@@ -43,6 +44,7 @@ export class Character extends Model<ICharacterSchema> implements ICharacterSche
   public gender!: string
   public image!: string
   public created!: string
+  public originId!: number
   public locationId!: number
 }
 
@@ -81,6 +83,10 @@ export function _Character(sequelize:any, parents?:{one:boolean,instance:any,as:
       },
       created: {
         type: DataTypes.STRING,
+        allowNull: false,
+      },
+      originId: {
+        type: DataTypes.BIGINT,
         allowNull: false,
       },
       locationId: {

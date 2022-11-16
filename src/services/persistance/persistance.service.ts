@@ -64,6 +64,7 @@ export class PersistanceService implements IPersistanceService{
         const Character = _Character(this.sequelize,[
             {
                 as: 'origin',
+                foreignKey: 'originId',
                 instance: Location,
                 one: false
             },

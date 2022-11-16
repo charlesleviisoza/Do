@@ -8,7 +8,7 @@ export interface ILocation {
     type: string
     dimension: string
     created: string
-    residents: number[]
+    residents?: number[]
 }
 
 export interface ILocationSchema {
