@@ -25,7 +25,6 @@ export class EnvironmentService implements IEnvironmentService{
                 databaseUser: validationResult.value.DATABASE_USER,
                 depthLimit: validationResult.value.DEPTH_LIMIT,
                 graphqlUi: validationResult.value.GRAPHQL_UI === 'TRUE',
-                hostname: validationResult.value.HOSTNAME,
                 loggerlevel: validationResult.value.LOGGER_LEVEL,
                 migrateDatabase: validationResult.value.MIGRATE_DATABASE === 'TRUE',
                 nodeEnv: validationResult.value.NODE_ENV,

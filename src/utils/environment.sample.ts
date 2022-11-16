@@ -144,7 +144,6 @@ export const SAMPLE_ENVIRONMENT: IEnvironmentVariables = {
     databaseSSL: false,
     databaseUser: 'test',
     graphqlUi: true,
-    hostname: 'test',
     loggerlevel: 'OFF',
     migrateDatabase: false,
     nodeEnv: 'develoment',

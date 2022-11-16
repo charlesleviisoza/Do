@@ -10,7 +10,6 @@ export interface IEnvironmentVariables{
     databaseUser: string
     depthLimit?: string
     graphqlUi: boolean
-    hostname: string
     nodeEnv: string
     loggerlevel: string
     migrateDatabase: boolean
@@ -27,7 +26,6 @@ export const environmentSchema = Joi.object().keys({
     DATABASE_USER: Joi.string().required(),
     DEPTH_LIMIT: joiStringInteger().optional().allow(''),
     GRAPHQL_UI: Joi.string().required(),
-    HOSTNAME: Joi.string().required(),
     LOGGER_LEVEL: Joi.string().required(),
     MIGRATE_DATABASE: Joi.string().required(),
     NODE_ENV: Joi.string().required(),
