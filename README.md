@@ -63,8 +63,8 @@ npm start
 This is the successful result: 
 
 ```bash
-[2022-08-07T18:10:45.344] [INFO] default - AWS DynamoDB database started
-[2022-08-07T18:10:45.361] [INFO] default - HTTP Server listening in port 3000
+[2022-11-19T10:55:04.725] [INFO] default - Database started
+[2022-11-19T10:55:04.729] [INFO] default - HTTP Server listening in port 3000
 ```
 
 *NOTE:* The first time the project is started, the environment variable *MIGRATE_DATABASE* must be equal to *TRUE*, in order to initialize the structure of the database. Then, you can set the same variable to *FALSE*, so it will not be migrated again.
