@@ -30,5 +30,5 @@ export const environmentSchema = Joi.object().keys({
     MIGRATE_DATABASE: Joi.string().required(),
     NODE_ENV: Joi.string().required(),
     PORT: Joi.string().required(),
-    ROOT_PATH: Joi.string().required()
+    ROOT_PATH: Joi.string().optional().allow('').default('')
 }).unknown()
